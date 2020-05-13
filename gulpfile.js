@@ -27,8 +27,8 @@ gulp.task("default",async ()=>{
         .pipe(gulp.dest("D:\\phpStudy\\WWW\\nz2001taobao\\php"))
     });
 
-    gulp.watch("./src/*.scss",async ()=>{
-        gulp.src("./src/*.scss")
+    gulp.watch("./src/scss/*.scss",async ()=>{
+        gulp.src("./src/scss/*.scss")
         .pipe(sass())
         .pipe(gulp.dest("D:\\phpStudy\\WWW\\nz2001taobao\\css"))
     })

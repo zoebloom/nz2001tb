@@ -1,6 +1,5 @@
-
-function getDetail(){
-    let goodsId = location.search.split("=")[1];
+//根据商品编号  获取商品详情 
+function getDetail(goodsId){
     $.get("./php/getGoodsInfo.php",
     "goodsId="+goodsId,
     function(data){
@@ -132,11 +131,11 @@ function getDetail(){
                                 <dt class="tb-metatit">数量</dt>
                                 <dd>
                                     <span>
-                                        <input type="text" value="1" maxlength="8" title="请输入购买量">
+                                        <input class="input-count" type="text" value="1" maxlength="8" title="请输入购买量">
                                     </span>
                                     <span class="amount-btn">
-                                        <span class="iconfont icon-shangjian"></span>
-                                        <span class="iconfont icon-angle-down"></span>
+                                        <span class="iconfont icon-shangjian btnAdd"></span>
+                                        <span class="iconfont icon-angle-down btnReduce"></span>
                                     </span>
                                 </dd>
                             </dl>
@@ -249,7 +248,7 @@ function getDetail(){
                                 <div class="tb-btn-basket tb-btn-sku">
                                     <a href="#">
                                         <i class="iconfont icon-gouwuche"></i>
-                                        立即购买
+                                        加入购物车
                                         <span class="ensureText">确认</span>
                                     </a>
                                 </div>
@@ -261,9 +260,48 @@ function getDetail(){
         </div>
         `;
         $("#page #detail").html(htmlStr)
+
+        $(".btnAdd").click(function(){
+            let count = parseInt($(".input-count").val());
+            count++;
+            $(".input-count").val(count); 
+        })
+        $(".btnReduce").click(function(){
+            let count = parseInt($(".input-count").val());
+            count--;
+            if(count==0){
+                count =1
+            }
+            $(".input-count").val(count);
+        })
+        
+        $(".tb-action .tb-btn-basket").click(function(){
+            addShoppingCar(goodsId);
+        })
     },"json");
 }
 
+// 添加到购物车
+function addShoppingCar(goodsId){
+    $.post("./php/addShoppingCart.php",{
+        "vipName":"朱三",
+        "goodsId":goodsId,
+        "goodsCount":$(".input-count").val()
+    },(data)=>{
+        // console.log(data)
+        if(data==1){
+            alert("添加成功")
+        }else{
+            alert("服务器出错，请重新刷新一下")
+        }
+    })
+}
+
 $(function(){
-    getDetail();
+    let goodsId = location.search.split("=")[1];
+    getDetail(goodsId);
+    
+    $("#goShoppingCar").click(function(){
+        location.href = "shoppingCar.html"
+    })
 })
