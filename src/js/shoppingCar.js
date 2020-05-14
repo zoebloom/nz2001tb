@@ -1,6 +1,5 @@
 // 获取购物车数据
 function getShoppingCar(cb) {
-    // 从cookie中获取用户名
     $.get("./php/getShoppingCart.php", {
         "vipName": "朱三"
     }, function (data) {
@@ -77,7 +76,8 @@ function getShoppingCar(cb) {
                                                                 </div>
                                                                 <div class="item-info">
                                                                     <div class="item-basic-info">
-                                                                        <a href="#" class="item-title">${item.goodsDesc}</a>
+                                                                        <a href="#" class="item-title">${item.goodsId}</a>
+                                                                        <a href ="#" class = item-title2>${item.goodsDesc}</a>
                                                                     </div>
                                                                     <div class="item-other-info">
                                                                         <div class="promos-logos"></div>
@@ -149,35 +149,99 @@ function getShoppingCar(cb) {
     }, "json")
 }
 
+// 修改购物车的数量
+function updateCount(goodsId,goodsCount,cb){
+    $.get("./php/updateGoodsCount.php",{
+        "vipName":"朱三",
+        "goodsId":goodsId,
+        "goodsCount":goodsCount
+    },function(data){
+        if(data=="0"){
+            alert("系统出错，请重新刷新一下")
+        }else{
+            // 前端修改数量
+            cb();
+        }
+    })
+}
+
+// 删除购物车的商品
+// function removeGoods(goodsId){
+//     $.get("./php/deleteGoods.php",{
+//         "vipName":"朱三",
+//         "goodsId":goodsId
+//     },function(data){
+//         if(data=="1"){
+//             alert("删除成功")
+//         }else{
+//             alert("删除失败，请刷新一下")
+//         }
+//         // console.log(data)
+//     })
+// }
+
 $(function(){
-    getShoppingCar(addEvent)
+    getShoppingCar(addEvent);
+    // removeGoods(delEvent)
 
     function addEvent(){
         $(".plus").click(function(){
-            let count = parseInt($(".text-amount").val());
+            // 修改后端数量
+            let goodsId = $(this).parent().parent().parent().parent().find(".item-title").html();
+
+            let count = parseInt($(this).prev().val());
             count++;
-            $(".text-amount").val(count)
-            totalMoney()
+
+            updateCount(goodsId,count,()=>{
+                // 修改前端数量
+                // 数量
+                $(this).prev().val(count)
+                // 单价
+                let price = $(this).parent().parent().parent().prev().find("em").html().split("￥")[1];
+                // 计算金额
+                let money = price*count;
+                $(this).parent().parent().parent().next().find(".number").html("￥"+money)
+                // 总金额
+                totalMoney()
+            })
         })
 
         $(".no-minus").click(function(){
-            let count = parseInt($(".text-amount").val());
+            let goodsId = $(this).parent().parent().parent().parent().find(".item-title").html();
+            let count = parseInt($(this).next().val());
             count--;
-            if(count==0){
-                count=1;
-            };
-            $(".text-amount").val(count);
-            totalMoney()
+                if(count==0){
+                    count=1;
+                };
+
+            updateCount(goodsId,count,()=>{
+                
+                $(this).next().val(count);
+
+                let price = $(this).parent().parent().parent().prev().find("em").html().split("￥")[1];
+                let money =price * count;
+                $(this).parent().parent().parent().next().find(".number").html("￥"+money);
+                totalMoney()
+            }) 
         })
     }
-})
-function totalMoney(){
-    let money = 0;
+    // function delEvent(){
+    //     $(".delBtn").click(function(){
+    //         let goodsId = $(this).parent().parent().parent().find(".item-title").html();
 
-    let $totalMoney =$(".number").html();
-    $totalMoney.each(function(){
-        money += $totalMoney;
-    });
-    $(".price em").html(money)
+    //         $(".delBtn").parent().parent().parent().parent().parent().parent().parent().parent().parent().parent().parent().parent().remove();
+    //         totalMoney()
+    //     })
+    // }
+})
+
+function totalMoney(){
+    let money =0;
+
+    let $totalMoney = $(".td .number").html().split("￥")[1];
+    
+    money += parseInt($totalMoney)
+    // console.log(money)
+    $(".price-sum em").html(money);
 }
 

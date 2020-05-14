@@ -60,7 +60,7 @@
                                     <i class="iconfont icon-ren1"></i>
                                 </label>
                                 <div class="input-wrap">
-                                    <input type="text" class="fm-text" placeholder="会员/邮箱/手机号">
+                                    <input type="text" class="fm-text userId" placeholder="会员/邮箱/手机号">
                                 </div>
                             </div>
                         </div>
@@ -70,12 +70,14 @@
                                     <i class="iconfont icon-suo"></i>
                                 </label>
                                 <div class="input-wrap">
-                                    <input type="password" class="fm-text" placeholder="请输入登录密码">
+                                    <input type="password" class="fm-text passId" placeholder="请输入登录密码">
                                 </div>
                             </div>
                         </div>
+                        <div class="msg"></div>
                         <div class="fm-btn">
-                            <button type="submit" class="fm-submit">登录</button>
+                            <!-- <button type="" class="fm-submit">登录</button> -->
+                            <input type="button" value="登录" class="fm-submit">
                         </div>
                         <div class="login-blocks">
                             <a href="#" class="weibo-login">
@@ -310,3 +312,27 @@
     </div>
 </body>
 </html>
+<script src="./js/jquery-3.2.1.min.js"></script>
+<script>
+    $(".fm-submit").click(function(){
+        $.post("./php/login.php",{
+            "username":$(".userId").val(),
+            "userpass":$(".passId").val()
+        },function(data){
+            if(data=="success"){
+                let count = 6;
+                let myTimer = setInterval(()=>{
+                    count--;
+                    if(count==0){
+                        clearInterval(myTimer)
+                        location.href = "taobao.html";
+                        // return;
+                    }
+                    $(".msg").html(`登录成功，${count}秒后，自动跳转到<a href='taobao.html'>首页</a>`)
+                },1000)
+            }else if(data=="fail"){
+                $(".msg").html("用户名或者密码不正确")
+            }
+        })
+    })
+</script>

@@ -185,7 +185,11 @@
     background: transparent;
     line-height: 34px;
     font-size: 12px;
-    cursor: pointer;
+    /* cursor: pointer; */
+}
+.nc_scale .passId{
+    width: 100%;
+    height: 100%;
 }
 .btn{
     min-width: 180px;

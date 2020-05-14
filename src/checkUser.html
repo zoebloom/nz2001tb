@@ -109,28 +109,33 @@
                                     <span class="iconfont icon-angle-down"></span>
                                 </div>
                                 <input type="text" placeholder="请输入你的手机号码" class="mobile-input">
+                                <span class="yes"></span>
                             </div>
                         </div>
                         <div class="form-item">
-                            <span class="form-label">验证</span>
+                            <span class="form-label">密码</span>
                             <div id="umfp" style="width: 1px;height:1px;overflow: hidden;">
                                 <img src="https://ynuf.aliapp.org/service/clear.png?xt=ebf96af159bd9e7aa1b89e535d68c6c9&xa=CF_APP_REGISTER" alt="">
                             </div>
                             <div class="nc-container">
                                 <div class="nc_warpper">
                                     <div class="nc_scale">
-                                        <span class="iconfont icon-youjian"></span>
+                                        <!-- <span class="iconfont icon-youjian"></span> -->
                                         <div class="sildetounlock">
-                                            请按住滑块，拖动到最右边
+                                            <!-- 请按住滑块，拖动到最右边 -->
+                                            <input class="passId" type="text">
                                         </div>
                                     </div>
+                                    <span class="no"></span>
                                 </div>
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="form-item">
-                                <button type="submit" class="btn">下一步</button>
+                                <!-- <button type="submit" class="btn">注册</button> -->
+                                <input type="button" class="btn" value="注册">
                             </div>
+                            <div class="goLogin" style="padding: 10px 0 10px 260px;"></div>
                             <div class="form-item">
                                 <a href="#">切换成企业账户注册</a>
                             </div>
@@ -252,3 +257,75 @@
     </div>
 </body>
 </html>
+<script src="./js/jquery-3.2.1.min.js"></script>
+<script>
+    let hasUser = false;
+    function checkUser(cb){
+        // 前端验证格式是否正确
+        let reg = /^1\d{10}/;
+        if(!reg.test($(".mobile-input").val())){
+            $(".yes").html("格式不正确，以1开头的11为数字").css({color:"red"})
+            return;
+        }
+
+        // 后端验证用户名是否存在
+        $.get("./php/checkUser.php",{
+            "username":$(".mobile-input").val()
+        },function(data){
+            if(data=="1"){
+                hasUser = false;
+                $(".yes").html("√，该用户名可以使用")
+                $(".yes").css({
+                    color:"green"
+                }) 
+                cb && cb();
+            }else if(data=="0"){
+                hasUser = true;
+                $(".yes").html("x,已被注册")
+                $(".yes").css({
+                    color:"red"
+                })
+            } 
+        })
+    }
+
+    function reg(){
+        $.post("./php/addUser.php",{
+            "username":$(".mobile-input").val(),
+            "userpass":$(".form-item .passId").val()
+        },function(data){
+            if(data=="success"){
+                $(".goLogin").html("注册成功，请<a href='login.html'>登录</a>").css({
+                    color:"green"
+                
+                })
+            }else if(data=="fail"){
+                $(".goLogin").html("注册失败，请重新注册").css({
+                    color:"red"
+                })
+            }
+        })
+    }
+
+    $(".mobile-input").blur(function(){
+        checkUser()
+    })
+
+    $(".form-group .btn").click(function(){
+        if($(".mobile-input").val()==""){
+            $(".yes").html("用户名不能为空");
+            return;
+        }
+        if($(".passId").val()==""){
+            $(".no").html("密码不能为空").css({
+                color:"red"
+            });
+            return;
+        }
+        if(!hasUser){
+            checkUser(reg)
+        }
+
+        
+    })
+</script>
