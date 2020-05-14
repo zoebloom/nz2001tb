@@ -1,5 +1,6 @@
 // 获取购物车数据
-function getShoppingCar() {
+function getShoppingCar(cb) {
+    // 从cookie中获取用户名
     $.get("./php/getShoppingCart.php", {
         "vipName": "朱三"
     }, function (data) {
@@ -143,22 +144,13 @@ function getShoppingCar() {
                 </div>
             `;
         });
-        $(".ord-list").html(htmlStr)
+        $(".ord-list").html(htmlStr);
+        cb();
     }, "json")
 }
 
 $(function(){
-    getShoppingCar()
-
-    function totalMoney(){
-        let money = 0;
-
-        let $totalMoney =$(".number").html();
-        $totalMoney.each(function(){
-            money += $totalMoney;
-        });
-        $(".price em").html(money)
-    }
+    getShoppingCar(addEvent)
 
     function addEvent(){
         $(".plus").click(function(){
@@ -179,4 +171,13 @@ $(function(){
         })
     }
 })
+function totalMoney(){
+    let money = 0;
+
+    let $totalMoney =$(".number").html();
+    $totalMoney.each(function(){
+        money += $totalMoney;
+    });
+    $(".price em").html(money)
+}
 
